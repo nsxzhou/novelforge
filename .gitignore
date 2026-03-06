@@ -1,0 +1,6 @@
+.ace-tool/
+.claude/
+.omc/
+.omx/
+/backend/
+/frontend/
