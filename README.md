@@ -22,7 +22,7 @@ NovelForge/
 
 ### 子仓库说明
 
-- `backend/`：独立 Git 仓库，当前为基于 Hertz + Eino 的后端服务骨架
+- `backend/`：独立 Git 仓库，当前已完成 Hertz + Eino 后端基础设施、项目/资产 API、PostgreSQL 接入，以及 OpenAI 兼容 LLM 客户端与 Prompt 模板基础设施
 - `frontend/`：独立 Git 仓库，当前为前端仓库占位与后续实现入口
 
 ## 克隆项目
