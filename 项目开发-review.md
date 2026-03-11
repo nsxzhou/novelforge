@@ -1,81 +1,66 @@
-# NovelForge 项目开发 Review（基于《开发优先级.md》）
+# NovelForge 项目开发 Review（前端收尾后）
 
 ## 1. 评审范围与方法
 
 - 评审范围：父仓库（文档与子模块治理）+ `backend` + `frontend`。
-- 评审基线：以当前工作区代码与文档状态为准。
+- 评审基线：以当前工作区代码与文档状态为准（含本轮前端收尾改动）。
 - 核验方式：
-  - 文档口径一致性核对（`开发优先级.md`、父仓 `README.md`、后端 `README.md`）。
-  - 对 `开发优先级.md` 的 1-8 项逐条做代码证据核验（路由、usecase、存储、迁移、测试）。
-  - 运行基线验证：`cd backend && go test ./...`（已通过）。
+  - 文档口径一致性核对（父仓 `README.md`、`backend/README.md`、`frontend/README.md`、`frontend/docs/前端开发优先级-V1.md`）。
+  - 前端关键收尾项核对（资产生成状态显示、冲突提示、类型约束）。
+  - 前端基线验证：`cd frontend && npm run lint && npm run build`（已通过）。
 
 ## 2. 执行摘要
 
-- 结论：后端 V1 主链路能力基本落地，`开发优先级.md` 的大部分“已完成”声明在代码中有证据支撑。
-- 主要风险不在“后端是否有能力”，而在“全仓可交付性与一致性”：
-  - 前端仍为占位，项目级最小闭环在全仓维度不可用。
-  - 文档存在自相矛盾描述，会误导排期与验收。
-  - 剩余主要风险集中在可交付性与可运维性（前端闭环缺失、CI 质量闸门缺失、token 成本口径未打通）。
-
-## 2.1 本次修复进展（增量）
-
-- 已完成：Prompt 配置-能力映射类型化。
-  - `PromptConfig` 从 `map[string]string` 收敛为显式字段，并启用 YAML unknown field 校验。
-  - `PromptStore` 与业务用例改为按 `PromptCapability` 访问模板，移除散落字符串键。
-- 已完成：对话确认（`conversation confirm`）并发一致性增强。
-  - 在 `postgres` 运行态下，Confirm 流程已通过事务执行目标写回与会话清理，避免“目标已写回但会话未更新”的部分成功。
-  - 保持现有 API 语义不变：无 `pending_suggestion` 仍返回 `invalid_input`。
-- 已完成：当前稿确认与对话确认并发策略口径对齐。
-  - 两者均保持 optimistic locking 冲突语义；其中 conversation confirm 额外提供跨聚合原子提交保证。
+- 结论：项目已具备“后端能力 + 前端页面”的 V1 最小可用闭环，不再是“后端就绪但前端占位”的状态。
+- 主要剩余风险：
+  - 联调验收尚未完成（文档中的验收条目仍保持未勾选）。
+  - 仓库缺少 CI 自动化质量闸门。
+  - `token_usage` 口径仍为 `0`，成本可观测性未闭环。
 
 ## 3. Findings（按严重级别）
 
-### 3.1 Critical
+### 3.1 High
 
-#### C-01 全仓闭环不可交付：前端仍为占位
+#### H-01 缺失 CI/自动化质量闸门
 
-- 问题：父仓定义为“前后端子模块项目”，但前端当前仅占位，缺少任何可用产品 UI/流程实现。
-- 影响：在“整个项目”维度无法完成用户可用闭环，V1 只能算后端 API 就绪，不具备产品交付态。
-- 证据：
-  - [frontend/README.md](/Users/zhouzirui/code/AI/NovelForge/frontend/README.md#L1)
-  - [README.md](/Users/zhouzirui/code/AI/NovelForge/README.md#L25)
-- 建议修复：
-  - 明确将当前阶段定义为“后端 V1”而非“项目 V1”。
-  - 新建前端最小闭环里程碑（至少覆盖项目创建、资产编辑、章节生成、确认当前稿）。
-
-### 3.2 High
-
-#### H-03 缺失 CI/自动化质量闸门
-
-- 问题：仓库未见 CI 工作流（如 `.github/workflows`），当前质量依赖人工执行测试。
+- 问题：仓库未见 CI 工作流（如 `.github/workflows`），当前质量依赖人工执行检查。
 - 影响：回归风险高，跨人协作时质量不稳定；子模块升级可能引入静默破坏。
-- 证据：
-  - 代码库未发现 CI 配置（本地检索结果为空）。
 - 建议修复：
-  - 增加最小 CI：`go test ./...`、`go vet`、`golangci-lint`（可分阶段）。
-  - 父仓增加子模块变更检查规则（至少校验 `backend` 基线测试）。
+  - 增加最小 CI：前端 `npm run lint && npm run build`、后端 `go test ./...`。
+  - 父仓增加子模块变更检查规则（至少校验上述最小基线）。
 
-### 3.3 Medium
+### 3.2 Medium
 
-#### M-03 指标 `token_usage` 仍是固定 0，成本可观测性未闭环
+#### M-01 联调验收仍未闭环
 
-- 问题：章节与对话埋点虽有 `token_usage` 字段，但生成成功/失败都写入 0。
-- 影响：无法支持成本分析、模型对比和预算治理，V1.1 看板价值受限。
+- 问题：前端功能已落地，但验收标准条目仍为“待联调验收”状态。
+- 影响：当前可认定为“可联调版本”，但不能认定“联调通过版本”。
 - 证据：
-  - [backend/internal/service/chapter/usecase.go](/Users/zhouzirui/code/AI/NovelForge/backend/internal/service/chapter/usecase.go#L633)
-  - [backend/internal/service/conversation/usecase.go](/Users/zhouzirui/code/AI/NovelForge/backend/internal/service/conversation/usecase.go#L558)
+  - `frontend/docs/前端开发优先级-V1.md` 第 6 节验收标准仍未勾选。
+- 建议修复：
+  - 在真实后端环境按验收清单逐条联调，通过后再更新状态。
+
+#### M-02 `token_usage` 仍固定为 0，成本可观测性未闭环
+
+- 问题：章节与对话相关埋点虽有 `token_usage` 字段，但当前口径仍为 0。
+- 影响：无法支持成本分析、模型对比和预算治理，V1.1 看板价值受限。
 - 建议修复：
   - 从 LLM 响应接入真实 usage（prompt/completion/total token）并回填 `GenerationRecord` 与 metric。
 
-## 4.对照结论
+## 4. 本轮前端收尾核验结果
 
-| 项 | 文档结论 | 代码核验 | 审查结论 | 注记 |
-|---|---|---|---|---|
-| 1 领域模型与存储边界 | 已完成 | 有 | 成立 | 无阻断 |
-| 2 项目/资产 API | 已完成 | 有 | 成立 | 无阻断 |
-| 3 LLM 客户端 + Prompt | 已完成 | 有 | 成立 | Prompt 能力映射已类型化并收敛 |
-| 4 对话微调 | 已完成 | 有 | 成立 | Confirm 已引入事务原子提交（postgres） |
-| 5 章节生成主链路 | 已完成 | 有 | 成立 | rewrite 参数处理一致性待修 |
-| 6 当前稿确认 | 已完成 | 有 | 成立 | 与 conversation confirm 并发口径已对齐（CAS，且 conversation 提供跨聚合原子性） |
-| 7 埋点与可观测性 | 已完成 | 有 | 部分成立 | token 成本口径未打通 |
-| 8 测试与回归 | 已完成 | 有 | 基本成立 | 缺 CI 自动闸门 |
+- 已完成：AI 资产生成状态显式 UI（`generation_record.status` 显示 running/succeeded/failed）。
+- 已完成：前端冲突提示统一（`409` 返回提示“并发冲突，请刷新后重试”语义）。
+- 已完成：`GenerationRecord.status` 类型收窄为受限状态集合，减少状态分支遗漏风险。
+- 已完成：父仓、后端、前端三方 README 与前端优先级文档口径对齐，不再保留“前端占位”结论。
+
+## 5. 对照结论（本轮更新后）
+
+| 项 | 当前状态 | 结论 |
+|---|---|---|
+| 后端 V1 主链路 | 已完成 | 成立 |
+| 前端 V1 主流程页面 | 已完成 | 成立 |
+| 文档口径一致性 | 已完成同步 | 成立 |
+| 联调验收闭环 | 待完成 | 未完成 |
+| 自动化质量闸门（CI） | 缺失 | 未完成 |
+| 成本口径（token_usage） | 默认 0 | 部分成立 |

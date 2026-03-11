@@ -23,7 +23,7 @@ NovelForge/
 ### 子仓库说明
 
 - `backend/`：独立 Git 仓库，当前已完成 Hertz + Eino 后端基础设施、项目/资产 API、Project / Asset 对话微调、章节生成 / 当前稿确认 / 续写 / 局部重写 HTTP API、GenerationRecord 持久化，以及 OpenAI 兼容 LLM 客户端与 Prompt 模板基础设施
-- `frontend/`：独立 Git 仓库，当前为前端仓库占位与后续实现入口
+- `frontend/`：独立 Git 仓库，当前已完成 V1 前端闭环（项目创建/列表/编辑、资产 CRUD 与 AI 生成、项目/资产对话微调确认写回、章节生成/续写/局部改写/当前稿确认）；联调验收项见 `frontend/docs/前端开发优先级-V1.md`
 
 ## 克隆项目
 
