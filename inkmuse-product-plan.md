@@ -1,4 +1,4 @@
-# NovelForge 产品规划书
+# InkMuse 产品规划书
 
 ## 1. 产品愿景
 

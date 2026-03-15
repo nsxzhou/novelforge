@@ -1,6 +1,6 @@
 [submodule "backend"]
 	path = backend
-	url = https://github.com/nsxzhou/novelforge-backend
+	url = https://github.com/nsxzhou/inkmuse-backend
 [submodule "frontend"]
 	path = frontend
-	url = https://github.com/nsxzhou/novelforge-frontend
+	url = https://github.com/nsxzhou/inkmuse-frontend

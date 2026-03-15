@@ -1,22 +1,22 @@
-# NovelForge
+# InkMuse
 
-NovelForge 是一个开源、可扩展、可自部署的 AI 小说创作平台。
+InkMuse 是一个开源、可扩展、可自部署的 AI 小说创作平台。
 
 当前仓库是 **父仓库**，用于管理项目文档、整体结构和前后端子模块。V1 目标聚焦在“灵感 -> 项目创建 -> 设定/大纲 -> 单章草稿 -> 当前稿确认”的最小闭环。
 
 ## 相关文档
 
-- 产品规划：`novelforge-product-plan.md`
+- 产品规划：`inkmuse-product-plan.md`
 - 开发优先级：`开发优先级.md`
 - 运行文档：`运行文档.md`
 
 ## 仓库结构
 
 ```text
-NovelForge/
-├── backend/                     # 后端子模块：novelforge-backend
-├── frontend/                    # 前端子模块：novelforge-frontend
-├── novelforge-product-plan.md   # 产品规划
+InkMuse/
+├── backend/                     # 后端子模块：inkmuse-backend
+├── frontend/                    # 前端子模块：inkmuse-frontend
+├── inkmuse-product-plan.md   # 产品规划
 ├── 开发优先级.md                # 开发优先级
 └── .gitmodules                  # 子模块配置
 ```
@@ -31,8 +31,8 @@ NovelForge/
 首次克隆请带上子模块：
 
 ```bash
-git clone --recurse-submodules https://github.com/nsxzhou/novelforge.git
-cd novelforge
+git clone --recurse-submodules https://github.com/nsxzhou/inkmuse.git
+cd inkmuse
 ```
 
 如果已经普通克隆过父仓库，再执行：
@@ -107,6 +107,6 @@ git submodule update --init --recursive
 
 ## 远程仓库
 
-- 父仓库：<https://github.com/nsxzhou/novelforge>
-- 后端仓库：<https://github.com/nsxzhou/novelforge-backend>
-- 前端仓库：<https://github.com/nsxzhou/novelforge-frontend>
+- 父仓库：<https://github.com/nsxzhou/inkmuse>
+- 后端仓库：<https://github.com/nsxzhou/inkmuse-backend>
+- 前端仓库：<https://github.com/nsxzhou/inkmuse-frontend>
