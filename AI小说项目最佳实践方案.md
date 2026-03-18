@@ -1,5 +1,7 @@
 # AI 长篇小说生成项目：最佳实践方案
 
+> 参考资料：本文是架构研究与方案草稿，不描述当前 InkMuse 仓库的实际实现状态，也不作为运行/开发文档。
+
 > **核心问题**：如果今天从零搭建一个 AI 长篇小说生成项目，最简洁高效的路径是什么？
 >
 > 本文档基于 8 个前沿开源项目（MuMuAINovel、novel-workflow、FlowCabal、arboris-novel、Author、novelwriter、AI_NovelCraft-、InkMuse）的深度分析，提炼出经过验证的最佳架构与技术选型。
