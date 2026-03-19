@@ -13,7 +13,7 @@ InkMuse/
 ├── backend/                 # 后端子模块 — Go + Hertz + PostgreSQL
 ├── frontend/                # 前端子模块 — React + TypeScript + Tailwind CSS
 ├── ui-designs/              # 产品原型图（scheme-05-minimal 风格，HTML）
-├── docs/notes/              # 规划草稿、审查记录等参考资料（非当前实现真相来源）
+├── docs/                    # 契约审查、兼容层清单等项目文档
 ├── 运行文档.md               # 运行文档
 └── .gitmodules
 ```
@@ -43,10 +43,23 @@ Go + Hertz HTTP 框架 + PostgreSQL。DDD 分层架构（领域层 / 服务层 /
 - Prompt 模板管理（编译内嵌 + 项目级覆盖 + 变量白名单校验）
 - 指标采集（操作耗时、成功/失败事件）
 
+## 前后端交互方式
+
+- 前端默认通过 `VITE_API_BASE_URL` 连接后端，开发环境默认值是 `http://127.0.0.1:8080/api/v1`。
+- 普通 JSON 接口统一走 `frontend/src/shared/api/http-client.ts` 的 `request()`；导出下载走同一客户端里的 `requestRaw()`。
+- 流式生成接口统一走 `frontend/src/shared/api/sse-client.ts`，使用 SSE 消费章节生成、续写、改写、灵感 brainstorm、资产生成等结果。
+- 非 `GET` JSON 请求默认携带 `X-User-ID` 作为本地用户标识；这不是鉴权系统，只用于本地单用户场景下的操作归属。
+- 当前重要契约约定：
+  `character-states.relationships` 已是结构化数组 DTO。
+  `GET /llm/providers` 返回 `api_key_masked`，写接口仍提交 `api_key`。
+  前端默认关系类型和资产 schema 映射来自后端生成的 `frontend/src/shared/api/generated/contracts.ts`。
+- 路由与契约清单见 [backend/README.md](backend/README.md)、[frontend/README.md](frontend/README.md) 和 [docs/api-v1-contract-matrix.md](docs/api-v1-contract-matrix.md)。
+
 ## 文档分层
 
 - 当前实现与运行方式：根 `README.md`、[运行文档](运行文档.md)、[backend/README.md](backend/README.md)、[frontend/README.md](frontend/README.md)
-- 规划草稿与历史审查：`docs/notes/`，仅作为参考资料，不作为当前实现说明
+- 契约与兼容层文档：[docs/api-v1-contract-matrix.md](docs/api-v1-contract-matrix.md)、[docs/compatibility-adapters-inventory.md](docs/compatibility-adapters-inventory.md)
+- 历史审查与排查记录：[docs/frontend-backend-schema-audit.md](docs/frontend-backend-schema-audit.md)
 
 ## 克隆
 
