@@ -27,7 +27,9 @@ React 18 + Vite + TanStack Query + Tiptap 富文本编辑器。采用 scheme-05-
 - 组合式或手动创建项目
 - 设定工坊（资产 CRUD + AI 生成 + 生成后预览编辑 + 结构化表单）
 - 章节编辑（Tiptap 编辑器 + AI 续写/改写/Ghost Text + 未保存防误确认）
-- 记忆层（角色状态 + 时间线事件）
+- 章节质量评审（AI 多维度评分面板）
+- 记忆层（角色状态 + 时间线事件 + 关系图谱交互编辑）
+- 伏笔管理（时间线可视化 + CRUD）
 - Prompt 模板管理、LLM Provider 配置
 - 项目导出（Markdown / 纯文本）
 
@@ -38,7 +40,11 @@ Go + Hertz HTTP 框架 + PostgreSQL。DDD 分层架构（领域层 / 服务层 /
 主要功能：
 - 项目、资产、章节 CRUD
 - AI 生成/续写/改写（同步 JSON + SSE 流式）
+- 章节质量评审（多维度 AI 评分）
 - 角色状态、时间线事件与章节后提取
+- 伏笔网络（埋设/回收状态追踪）
+- 因果链追踪（事件间因果关系映射）
+- @DSL 上下文引用（Prompt 中 `@Character`/`@Event`/`@Chapter` 标签自动解析）
 - OpenAI 兼容 LLM 客户端（支持多 Provider）
 - Prompt 模板管理（编译内嵌 + 项目级覆盖 + 变量白名单校验）
 - 指标采集（操作耗时、成功/失败事件）
