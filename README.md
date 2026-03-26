@@ -61,7 +61,7 @@ Go + Hertz HTTP 框架 + PostgreSQL。DDD 分层架构（领域层 / 服务层 /
 - 当前重要契约约定：
   `character-states.relationships` 已是结构化数组 DTO。
   `GET /llm/providers` 返回 `api_key_masked`，写接口仍提交 `api_key`。
-  前端默认关系类型和资产 schema 映射来自后端生成的 `frontend/src/shared/api/generated/contracts.ts`。
+  前端共享资产 schema、核心 DTO、brainstorm schema 与默认关系类型配置来自后端生成的 `frontend/src/shared/api/generated/contracts.ts`。
 - 路由与契约清单见 [backend/README.md](backend/README.md)、[frontend/README.md](frontend/README.md)。
 
 ## 文档分层
