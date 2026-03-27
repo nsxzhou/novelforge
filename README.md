@@ -47,7 +47,7 @@ Go + Hertz HTTP 框架 + PostgreSQL。DDD 分层架构（领域层 / 服务层 /
 - 角色状态、时间线事件与章节后提取
 - 因果链追踪（事件间因果关系映射）
 - 知识图谱（角色-地点-事件-物品关系网络 + 同步构建）
-- OpenAI 兼容 LLM 客户端（支持多 Provider）
+- LLM Provider 双路径接入：`openai_compatible` 与 `openai_responses`
 - 编译内嵌 Prompt 模板管理
 - 指标采集 + 成本看板（token 消耗/生成次数/耗时聚合统计）
 - 项目导出（Markdown / 纯文本 / EPUB）
@@ -63,6 +63,7 @@ Go + Hertz HTTP 框架 + PostgreSQL。DDD 分层架构（领域层 / 服务层 /
   `GET /llm/providers` 返回 `api_key_masked`，写接口仍提交 `api_key`。
   前端共享资产 schema、核心 DTO、brainstorm schema 与默认关系类型配置来自后端生成的 `frontend/src/shared/api/generated/contracts.ts`。
 - 路由与契约清单见 [backend/README.md](backend/README.md)、[frontend/README.md](frontend/README.md)。
+- 官方 OpenAI GPT 模型推荐配置为 `provider=openai_responses`、`base_url=https://api.openai.com/v1`；兼容网关继续使用 `openai_compatible`。
 
 ## 文档分层
 
