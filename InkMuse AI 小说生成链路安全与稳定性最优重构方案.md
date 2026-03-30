@@ -25,20 +25,6 @@
 
 ## Key Changes
 
-### 2. 引入 ContextSanitizer
-
-所有动态注入文本进入 prompt 前统一经过 ContextSanitizer。
-
-处理规则固定：
-
-- UTF-8 / NUL / 控制字符清洗
-- 长度裁剪与截断统计
-- 定界符转义与分段封装
-- 每段记录 `source_type`、`hash`、`char_count`、`truncated`
-- 高风险短语只降权不改写语义，不做"智能内容净化"
-
-适用范围：chapter generation、continue、rewrite、review、summary、character_state_extraction、timeline_extraction、scratchpad_extract、brainstorm、asset generate/refine 全部复用同一 sanitizer。
-
 ### 3. 重构 Prompt Trace、Generation Record 与调试数据
 
 #### 新增前端可见 PromptTraceManifest
@@ -359,7 +345,6 @@ prompt 装配时间、首 token 时间、review 耗时、derivation 耗时、con
 **后端**
 
 - PromptEnvelope
-- ContextSanitizer
 - 严格模板渲染
 - capability 数据白名单
 - operation routing 落地
