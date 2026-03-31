@@ -25,28 +25,6 @@
 
 ## Key Changes
 
-### 7. 收紧 JSON 结构化输出回退
-
-固定顺序：
-
-1. GenerateStructured
-2. 本地 json-repair
-3. 单次远程 repair retry
-
-远程 repair retry 的输入只允许包含：
-
-- schema
-- schema name
-- parse error
-- raw output
-
-retry prompt 不再包含原始 system prompt、user prompt、章节正文、资产正文。
-
-其他调整：
-
-- extraction 全部补显式 schema，禁止 schema 缺失下的宽松解码
-- `used_repair`、`retry_count`、`repair_stage` 进入 generation record 与指标
-
 ### 8. 质量链路与确认门禁
 
 #### 自动触发
