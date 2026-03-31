@@ -25,22 +25,6 @@
 
 ## Key Changes
 
-### 6. 修正 POV 设计
-
-#### 新增字段
-
-- 新增章节级 `pov_character_name`，进入 outline chapter seed、chapter DTO、generated contracts、前端编辑入口
-- `PromptProfile.narrative_pov` 继续表示全局叙事模式；`pov_character_name` 是章节级硬过滤输入
-
-#### POV 过滤逻辑
-
-当 `narrative_pov` 为 `first_person` 或 `third_limited`：
-
-- 若存在 `pov_character_name`，角色状态、scratchpad、时间线、KG、远期计划都必须先过可见性过滤再进入 `trusted_context`
-- 若不存在，则进入 `degraded_pov_mode`，只保留风格提示，不宣称已完成信息过滤
-
-README、后端说明、前端文案同步修正，不再把现有做法描述为"自动 POV 信息过滤"。
-
 ### 7. 收紧 JSON 结构化输出回退
 
 固定顺序：
