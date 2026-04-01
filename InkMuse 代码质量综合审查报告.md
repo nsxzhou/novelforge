@@ -630,6 +630,26 @@ InkMuse 当前仓库采用父仓库 + 子模块协作方式，`frontend/` 与 `b
 - 基础设施层只暴露必要能力，不再保留长期空转或重复维护的结构。
 - 命名与 GoDoc 至少在当前暴露边界上达到一致和可读。
 
+### 完成产出
+
+- `backend/api/http` 已按 health、stats、project/asset/chapter、memory、knowledge graph、LLM provider 拆为分域 registrar；`routes.go` 仅保留依赖收敛与顶层调度。
+- `Bootstrap` 已收敛为最小运行时 surface：内部依赖改为未导出字段，对外仅保留 `Server()`、`WriteTimeoutSeconds()` 和 `Close()`；`cmd/server` 不再直接读取 runtime service bag。
+- chapter handler 已补齐通用模板 helper：`bindChapterRequest`、`runChapterSingleCall`、`wrapChapterStreamCompletion` 统一了承载 `BindJSON + 单次 AI 超时包装 + 完成态响应整形` 的重复路径。
+- KG 仓储接口已缩到真实使用面：domain interface 与 memory/postgres 双实现只保留 `CreateNode`、`ListNodes`、`CreateEdge`、`ListEdges`、`DeleteAllByProject`。
+- `service/stats` 已新增 `ProjectStatsByID()`，项目 handler 不再自行从全量 stats 结果重复拼索引；prompt builder 构造命名、死代码和 `DebugConfig` GoDoc 也已同步收口。
+
+### 验收结果
+
+- 路由装配入口已不再承担所有路由细节：optional routes 的条件注册继续保留，但 domain-level registrar 已拆出，`RegisterRoutes` 仅负责编排。
+- 基础设施与装配暴露面已收窄：`Bootstrap` 不再把 config / repo / LLM runtime 作为公共字段暴露，KG 仓储接口也不再保留未被 use case 使用的 CRUD 空能力。
+- 命名与基础注释已回到一致状态：`NewPromptEnvelopeBuilder` 与 `PromptEnvelopeBuilder` 对齐，`DebugConfig` 补齐 GoDoc，chapter handler 的 sync/stream 模板也不再散落重复闭包。
+
+### 完成状态
+
+- 状态：`已完成（2026-04-01）`
+- 后端验证：`go test ./internal/app ./internal/infra/http/handler ./internal/service/knowledgegraph ./internal/service/stats`、`go test ./...`、`go vet ./...`、`go build ./...`
+- 验证结果：定向测试通过；后端全量测试通过；`go vet` 通过；后端全量构建通过。
+
 ### 纳入问题清单
 
 #### 中风险 / P1
@@ -640,6 +660,8 @@ InkMuse 当前仓库采用父仓库 + 子模块协作方式，`frontend/` 与 `b
    Severity: 中  
    Recommendation: 按域拆 registrar + 子依赖  
    Refactor Priority: P1
+   完成情况：`backend/api/http/routes.go` 已收敛为顶层入口，新增 `route_handlers.go` 与分域 `routes_*.go` registrar 文件，health、stats、project/asset/chapter、memory、KG、LLM provider 路由注册已按域拆开。
+   验证方式：`go test ./internal/infra/http/handler`、`go test ./...`。
 
 2. **来源：代码冗余检测 9**  
    Finding: KG 仓储接口含大量无调用 CRUD，双实现重复维护  
@@ -647,6 +669,8 @@ InkMuse 当前仓库采用父仓库 + 子模块协作方式，`frontend/` 与 `b
    Severity: 中  
    Recommendation: 缩窄接口到真实用例  
    Refactor Priority: P1
+   完成情况：`knowledgegraph.Repository` 已缩窄为 `CreateNode / ListNodes / CreateEdge / ListEdges / DeleteAllByProject`；memory 与 postgres 仓储中无调用的 `UpdateNode / DeleteNode / GetNode / FindNodeByTypeAndName / DeleteEdge / FindEdge` 已删除。
+   验证方式：`go test ./internal/service/knowledgegraph`、`go test ./...`。
 
 3. **来源：设计模式评估 6**  
    Finding: `Bootstrap` 暴露 runtime service bag  
@@ -655,6 +679,8 @@ InkMuse 当前仓库采用父仓库 + 子模块协作方式，`frontend/` 与 `b
    Pattern Concern: `Service Bag`  
    Recommendation: 只暴露最小启动/关闭接口  
    Refactor Priority: P2
+   完成情况：`Bootstrap` 的 config、server、LLM、repository、chapter use case 已改为未导出字段，对外新增 `Server()` 与 `WriteTimeoutSeconds()`，`cmd/server/main.go` 只消费最小运行时接口。
+   验证方式：`go test ./internal/app`、`go test ./...`、`go build ./...`。
 
 4. **来源：设计模式评估 8**  
    Finding: `sync/stream` 成对重复，模板化不完整  
@@ -663,6 +689,8 @@ InkMuse 当前仓库采用父仓库 + 子模块协作方式，`frontend/` 与 `b
    Pattern Concern: `Template Method 不完整`  
    Recommendation: 提炼统一执行模板  
    Refactor Priority: P1
+   完成情况：chapter handler 已新增 `bindChapterRequest`、`runChapterSingleCall`、`wrapChapterStreamCompletion`，`chapter_write.go`、`chapter_review.go` 与大部分 `chapter_stream.go` 的重复模板已统一复用。
+   验证方式：`go test ./internal/infra/http/handler`、`go test ./...`。
 
 5. **来源：代码规范检查 11**  
    Finding: `RegisterRoutes` 过长  
@@ -671,6 +699,8 @@ InkMuse 当前仓库采用父仓库 + 子模块协作方式，`frontend/` 与 `b
    Rule Violated: 函数职责聚焦  
    Recommendation: 分域注册函数  
    Refactor Priority: P1
+   完成情况：`RegisterRoutes()` 已改为“构建共享 handlers + 分域 registrar 调度”的薄入口，不再内联所有 route 和 optional dependency 分支。
+   验证方式：`go test ./internal/infra/http/handler`、`go test ./...`。
 
 6. **来源：代码规范检查 13**  
    Finding: 构造命名不一致 `NewPromptAssembler vs PromptEnvelopeBuilder`  
@@ -679,6 +709,8 @@ InkMuse 当前仓库采用父仓库 + 子模块协作方式，`frontend/` 与 `b
    Rule Violated: 命名一致性  
    Recommendation: 统一构造函数或类型名  
    Refactor Priority: P2
+   完成情况：prompt builder 构造函数已统一更名为 `NewPromptEnvelopeBuilder`，并同步更新 `bootstrap`、`asset / chapter / project / extraction` 及相关测试调用点。
+   验证方式：`go test ./internal/service ./internal/app`、`go test ./...`。
 
 #### 低风险 / P2-P3
 
@@ -688,6 +720,8 @@ InkMuse 当前仓库采用父仓库 + 子模块协作方式，`frontend/` 与 `b
    Severity: 低  
    Recommendation: 删除  
    Refactor Priority: P3
+   完成情况：`internal/infra/http/handler/project.go` 中未被调用的 `newProjectResponses()` 已删除，项目 handler 仅保留当前真实使用的 response 构造路径。
+   验证方式：`go test ./internal/infra/http/handler`、`go test ./...`。
 
 2. **来源：代码冗余检测 11**  
    Finding: `stats usecase` 为空转包装层  
@@ -695,6 +729,8 @@ InkMuse 当前仓库采用父仓库 + 子模块协作方式，`frontend/` 与 `b
    Severity: 低  
    Recommendation: 合并层级或增加真实业务职责  
    Refactor Priority: P3
+   完成情况：`service/stats` 已新增 `ProjectStatsByID()` 聚合 helper，项目 handler 改为直接消费项目级统计索引，`stats usecase` 不再只是单纯透传 `GetStats()`。
+   验证方式：`go test ./internal/service/stats ./internal/infra/http/handler`、`go test ./...`。
 
 3. **来源：代码规范检查 10**  
    Finding: `DebugConfig` 缺 GoDoc  
@@ -703,6 +739,8 @@ InkMuse 当前仓库采用父仓库 + 子模块协作方式，`frontend/` 与 `b
    Rule Violated: `AGENTS 6.5`  
    Recommendation: 补注释  
    Refactor Priority: P3
+   完成情况：`pkg/config/config.go` 中 `DebugConfig` 已补齐 GoDoc，说明其仅承载开发期诊断开关。
+   验证方式：`go test ./internal/app ./pkg/config`、`go test ./...`。
 
 ## Phase 5｜跨模块契约、测试基线与最终收口
 
